@@ -1,0 +1,35 @@
+<script lang="ts">
+	//import {board as boardStore} from "../store/board";
+	import Board from "./components/Board.svelte";
+	export let name: string;
+//	export let data;
+</script>
+
+<main>
+	<h1 class="h">{name}</h1>
+	<Board />
+</main>
+
+<style>
+	main {
+		text-align: center;
+		padding: 1em;
+		max-width: 240px;
+		margin: 0 auto;
+		height: 100%;
+		width: 100%;
+	}
+
+	.h {
+		color: #ff3e00;
+		text-transform: uppercase;
+		font-size: 4em;
+		font-weight: 100;
+	}
+
+	@media (min-width: 640px) {
+		main {
+			max-width: none;
+		}
+	}
+</style>
