@@ -577,14 +577,64 @@ var app = (function () {
             return squares;
         }
         get showBoard() {
-            return derived(__classPrivateFieldGet(this, _Board_board, "f"), $board => $board.map(field => field.v));
+            let res;
+            __classPrivateFieldGet(this, _Board_board, "f").subscribe(b => res = b);
+            return res.map(f => typeof f == "object" && "v" in f ? f.v : f);
+        }
+        setField(f, field) {
+            __classPrivateFieldGet(this, _Board_board, "f").update(board => {
+                board.splice(f, 1, field);
+                return board;
+            });
+        }
+        getField(f) {
+            if (f >= 0 && f < (9 * 9)) {
+                let res;
+                __classPrivateFieldGet(this, _Board_board, "f").subscribe(b => res = b);
+                return res[f];
+            }
+            else
+                return 0;
         }
         generateNewBoard() {
-            const board = Array(9 * 9).fill(1).map((_, ind) => ({
-                v: ind + 1,
-                x: ind + 1
-            }));
-            __classPrivateFieldGet(this, _Board_board, "f").update(_ => board);
+            __classPrivateFieldGet(this, _Board_board, "f").update(_ => Array(9 * 9).fill(0));
+            let probe = 0;
+            do {
+                for (let ind = 0; ind < 9 * 9; ind++) {
+                    let usedNumbers = [];
+                    let num = 0;
+                    //if (ind > 0) console.log(this.getField(ind - 1))
+                    do {
+                        num = Math.floor(Math.random() * 9) + 1;
+                        if (usedNumbers.includes(num))
+                            continue;
+                        if (!this.checkSquareByField(ind, num)) {
+                            if (!this.checkLineByField("x", ind, num)
+                                && !this.checkLineByField("y", ind, num)) {
+                                break;
+                            }
+                            else
+                                usedNumbers.push(num);
+                        }
+                        else
+                            usedNumbers.push(num);
+                    } while (usedNumbers.length < 9);
+                    if (usedNumbers.length < 9) {
+                        this.setField(ind, {
+                            v: num,
+                            x: num
+                        });
+                    }
+                    else {
+                        this.getSquareNumberByFieldNumber(ind);
+                        /*if (currentSquareNum > 0)
+                            ind = this.getFirstFieldNumberBySquareNumber(currentSquareNum - 1)
+                        else
+                            ind = 0*/
+                    }
+                }
+                probe++;
+            } while (this.showBoard.includes(0) && probe < 2);
         }
         getLineByField(l, f) {
             return derived(__classPrivateFieldGet(this, _Board_board, "f"), $board => $board.reduce((acc, field, ind) => {
@@ -598,6 +648,16 @@ var app = (function () {
                 }
                 return acc;
             }, []));
+        }
+        checkLineByField(l, f, n) {
+            let line;
+            this.getLineByField(l, f).subscribe(l => line = l);
+            return line.find(f => typeof f == "object" && "v" in f && f.v == n) != undefined;
+        }
+        checkSquareByField(f, n) {
+            let square;
+            this.getSquareByField(f).subscribe(s => square = s);
+            return square.find(f => typeof f == "object" && "v" in f && f.v == n) != undefined;
         }
         /*getLineByNumber (l: numLine, n: number): ILine {
 
@@ -614,8 +674,14 @@ var app = (function () {
                 }, []);
             });
         }
+        getSquareNumberByFieldNumber(n) {
+            return (Math.floor(n / 3) % 3) + ((Math.floor(n / 27) * 3));
+        }
+        getFirstFieldNumberBySquareNumber(n) {
+            return ((n * 3) + Math.floor(n / 3) * 18);
+        }
         getSquareByNumber(n) {
-            return this.getSquareByField((n * 3) + Math.floor(n / 3) * 18);
+            return this.getSquareByField(this.getFirstFieldNumberBySquareNumber(n));
         }
     }
     _Board_board = new WeakMap();
