@@ -12,6 +12,9 @@
 
 <style>
 	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		text-align: center;
 		padding: 1em;
 		max-width: 240px;

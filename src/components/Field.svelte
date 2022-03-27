@@ -31,7 +31,8 @@
 	 min="1"
   	 max="9"
   	 size="1"
-	 type="number"
+    	type="number"
+	disabled={value.x || false}
   	 value={value.v || ""}
   	>
 </div>
@@ -52,5 +53,8 @@
 		height: 100%;
 		width: 100%;
 		outline: none;
-	 }
+	}
+	input[type="number"]:disabled{
+		color: darkslategray;
+	}
 </style>

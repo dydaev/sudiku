@@ -94,11 +94,14 @@ export default class Board {
 		this.#board.update(_ => Array(9 * 9).fill(0))
 
 		this.probeGetField(0);
+		this.hideFields();
 	}
 
-	hideFields(difficult=[5,7]) {
-		for(let square = 0; square<9; square++) {
-			Math.floor(Math.random() * difficult[1]) + difficult[0];
+	hideFields(difficult=[4,6]) {
+		for(let square = 0; square < 9;  square++) {
+			for (let countShowsFields =  Math.floor(Math.random() * (difficult[1] - difficult[0] + 1)) + difficult[0]]; countShowsFields > 0; countShowsFields--) {
+				this.setFieldToSquare(square, Math.floor(Math.random() * (8 + 1)), {v:0, x:0})
+			}
 		}
 	}
 
@@ -124,10 +127,6 @@ export default class Board {
 		this.getSquareByField(f).subscribe(s => square = s);
 		return square.find(f => typeof f == "object" && "v" in f && f.v == n) != undefined
 	}
-
-	/*getLineByNumber (l: numLine, n: number): ILine {
-
-	}*/
 
        getSquareByField (f: numField) {
 	       const minX = Math.floor((f % 9)/3) * 3;
