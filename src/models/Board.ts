@@ -9,7 +9,7 @@ export default class Board {
 
 	constructor() {
 		this.#board = writable([])
-		this.generateNewBoard();
+		this.fillBoard(true);
 	}
 
 	get squares() {
@@ -27,12 +27,20 @@ export default class Board {
 		return res.map(f => typeof f == "object" && "v" in f ? f.v : f)
 	}
 
-	setField (f: numField, field: IField) {	
+	setField(f: numField, field: IField) {	
     		this.#board.update(board => {
 			board.splice(f, 1, field)
 			return board
 		});
 	}
+
+	setFieldToSquare(s: numSquare, f: numField, field: IField) {
+		let numberFirstSquareField =  this.getFirstFieldNumberBySquareNumber(s);
+		const rowOfSquare = Math.floor(f / 3);
+		const n = numberFirstSquareField + (rowOfSquare * 9 + (f % 3))
+		this.setField(n, field)
+	}	
+	
 	getField (f: numField) {
 		if (f >=0 && f < (9*9)) {
 			let res;
@@ -41,50 +49,57 @@ export default class Board {
 		} else return 0
 	}
 
-	generateNewBoard() {
 
-    		this.#board.update(_ => Array(9 * 9).fill(0))
-		let probe = 0
-		do {
-		for (let ind = 0; ind < 9*9; ind++ ) {
+
+		probeGetField (index: number) {
+
+			let currentProbe = 1;
 			let usedNumbers = [];
 			let num = 0;
 
-			//if (ind > 0) console.log(this.getField(ind - 1))
-
-			do {
+			do{
 				num = Math.floor(Math.random() * 9) + 1;
-
+				
 				if (usedNumbers.includes(num)) continue;
+				
+				if (!this.checkSquareByField(index, num)) {
+					if (!this.checkLineByField("x", index, num)
+					    && !this.checkLineByField("y", index, num)) {
+						    this.setField(index, {v: num, x: num});
 
-				if (!this.checkSquareByField(ind, num)) {
-					if (!this.checkLineByField("x", ind, num) 
-					    && !this.checkLineByField("y", ind, num)) {
-						break;
-					} else usedNumbers.push(num)
-				} else usedNumbers.push(num)
+						    if (index < 80) {
 
-			} while(usedNumbers.length < 9)
+							    const [nextProbe, result] = this.probeGetField(index + 1);
+							    currentProbe = nextProbe + 1;//currentProbe;
+							    
+							    if(result == 0) {
+								    this.setField(index, {v:0, x:0})
+							    } else return [currentProbe, num]
+								    
+						    } else {
+							    return [currentProbe, num]
+						    }
+					}
+				}
+				
+				usedNumbers.push(num);
+				num = 0;
 
-			if (usedNumbers.length < 9) {
-				this.setField( ind,
-				{
-					v: num,
-					x: num
-				})
-			} else {
-				const currentSquareNum = this.getSquareNumberByFieldNumber(ind)
+			} while ( usedNumbers.length < 9)
 
-				/*if (currentSquareNum > 0)
-					ind = this.getFirstFieldNumberBySquareNumber(currentSquareNum - 1)
-				else
-					ind = 0*/
-
-			}
-
+			return [currentProbe, 0]
 		}
-		probe++;
-		} while (this.showBoard.includes(0) && probe < 2)
+	fillBoard(isNewBoard = false) {
+
+		this.#board.update(_ => Array(9 * 9).fill(0))
+
+		this.probeGetField(0);
+	}
+
+	hideFields(difficult=[5,7]) {
+		for(let square = 0; square<9; square++) {
+			Math.floor(Math.random() * difficult[1]) + difficult[0];
+		}
 	}
 
 	getLineByField (l: lineOrdinate, f: numField){
@@ -115,7 +130,7 @@ export default class Board {
 	}*/
 
        getSquareByField (f: numField) {
-		const minX = Math.floor((f % 9)/3) * 3;
+	       const minX = Math.floor((f % 9)/3) * 3;
 		const minY = Math.floor(Math.floor(f / 9) / 3) * 3;
 
 		return derived(this.#board ,$board => {
