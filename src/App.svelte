@@ -1,11 +1,19 @@
 <script lang="ts">
 	//import {board as boardStore} from "../store/board";
+	import Settings from "./store/settings"
 	import Board from "./components/Board.svelte";
+	import Menu from "./components/Menu.svelte";
 	export let name: string;
 //	export let data;
+
+	
+
+	let props = Settings.$settings;
+	console.log(props)
 </script>
 
 <main>
+	<Menu />
 	<h1 class="h">{name}</h1>
 	<Board />
 </main>
