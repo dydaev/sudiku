@@ -1,11 +1,17 @@
 <script lang="ts">
-	import {board as boardStore} from "../store/board";
+	import Board from "../store/Board";
 
 	import Square from "./Square.svelte";
 
-	import type IField from "../interfaces/IField"
+	import type IField from "../interfaces/IField";
 
-	const { squares } = boardStore
+	export let settings;
+
+	const level = settings.getLevel();
+	const showingErr = settings.getSetting("showErrors");
+	const boardStore = new Board(level);
+
+	const { squares } = boardStore;
 </script>
 
 <div class="su-board">

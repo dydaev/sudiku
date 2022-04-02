@@ -2,12 +2,14 @@ import { derived, writable, Writable } from 'svelte/store'
 
 import IField from "../interfaces/IField";
 
-import type { numSquare, lineOrdinate, numField } from "../types";
+import type { numSquare, lineOrdinate, numField } from "../types/index";
 
 export default class Board {
 	#board: Writable<any[]>;// Array<IField>
+	#level: [];
 
-	constructor() {
+	constructor(lvl: []) {
+		this.#level = lvl;
 		this.#board = writable([])
 		this.fillBoard(true);
 	}
@@ -94,11 +96,10 @@ export default class Board {
 		this.#board.update(_ => Array(9 * 9).fill(0))
 
 		this.probeGetField(0);
-		this.hideFields();
+		this.hideFields(this.#level);
 	}
 
 	hideFields(difficult=[4,6]) {
-		console.log(difficult)
 		for(let square = 0; square < 9;  square++) {
 			for (let countShowsFields =  Math.floor(Math.random() * (difficult[1] - difficult[0] + 1)) + difficult[0]]; countShowsFields > 0; countShowsFields--) {
 				this.setFieldToSquare(square, Math.floor(Math.random() * (8 + 1)), {v:0, x:0})

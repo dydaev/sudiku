@@ -18,7 +18,6 @@ const app = new App({
 	target: document.body,
 	props: {
 		name: 'sud!ku',
-		data: generateBoard()
 	}
 });
 

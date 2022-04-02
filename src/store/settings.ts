@@ -2,17 +2,15 @@ import { derived, writable, Writable } from 'svelte/store'
 
 export default class Settings {
 	#settings: Writable<any>;
-	//#levels: Writable<any>;
-	//
+	
 	#langs: Array<string> = ["en", "ua"]
-
-	#levels: Array<string> = ["low", "med", "hig"];
-
+	#levels: Array<string> = ["low", "medium", "height", "hard"];
 
 	constructor() {
 		this.#settings = writable({
 			lang: 0,
-			level: "medium"
+			level: "medium",
+			showErrors: false 
 		})
 
 		//this.initial();
@@ -40,10 +38,14 @@ export default class Settings {
 		return this.#levels;
 	}
 
-	getLevel(name: string): [number, number] {
+	getLevel(): [number, number] {
+		const name = this.getSetting("level")
 		switch (name){
+			case "hard":
+				return [8, 9];
+			break;
 			case "height":
-				return [6, 8];
+				return [7, 8];
 			break;
 			case "medium":
 				return [4, 6];
