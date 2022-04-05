@@ -2,12 +2,14 @@
 	import type IField from "..interfaces/IField";
 	import  Field from "./Field.svelte"; 
 
-	export let fields: [IField]
+	export let fields: [IField];
+	export let ind: number;
+	export let onChangeField;
 </script>
 
 <div class="su-square">
-	{#each fields as field}
-		<Field value={field}/>
+	{#each fields as field, indF}
+		<Field value={field} {onChangeField} {indF} indS={ind} />
 	{/each}
 
 </div>

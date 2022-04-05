@@ -37,12 +37,16 @@ export default class Board {
 	}
 
 	setFieldToSquare(s: numSquare, f: numField, field: IField) {
-		let numberFirstSquareField =  this.getFirstFieldNumberBySquareNumber(s);
-		const rowOfSquare = Math.floor(f / 3);
-		const n = numberFirstSquareField + (rowOfSquare * 9 + (f % 3))
+		const n = this.getFieldNumBySquareAndFieldInSquare(s, f);
 		this.setField(n, field)
 	}	
 	
+	getFieldNumBySquareAndFieldInSquare(s: numSquare, f: numField) {
+		let numberFirstSquareField =  this.getFirstFieldNumberBySquareNumber(s);
+		const rowOfSquare = Math.floor(f / 3);
+		return numberFirstSquareField + (rowOfSquare * 9 + (f % 3))
+	}
+
 	getField (f: numField) {
 		if (f >=0 && f < (9*9)) {
 			let res;
@@ -117,17 +121,36 @@ export default class Board {
 			return acc;
 		}, []))
 	}
+	getFieldsIndexesForArray(arr: [], n:number) {
+		return arr.reduce((acc,f, ind) => (
+			typeof f == "object" && "v" in f && f.v == n ? [...acc, ind]: acc 
+		) , [])
+	}
+
+	getIndexesOfNumberInLine(l: lineOrdinate, f:numField, n:number){
+		let line;
+		this.getLineByField(l, f).subscribe(l => line = l);
+		return this.getFieldsIndexesForArray(line, n);
+	}
+
+	getIndexesOfNumberInSquare(f:numField, n:number){
+		let square
+		this.getSquareByField(f).subscribe(s => square = s);
+		return this.getFieldsIndexesForArray(square, n);
+	}
 
 	checkLineByField(l: lineOrdinate, f:numField, n:number): boolean{
-		let line
-		this.getLineByField(l, f).subscribe(l => line = l)
-		return line.find(f => typeof f == "object" && "v" in f && f.v == n) != undefined
+		return !!this.getIndexesOfNumberInLine(l, f, n).length;
 	}
 
 	checkSquareByField(f:numField, n:number): boolean{
-		let square
-		this.getSquareByField(f).subscribe(s => square = s);
-		return square.find(f => typeof f == "object" && "v" in f && f.v == n) != undefined
+		return !!this.getIndexesOfNumberInSquare(f, n).length;
+	}
+
+
+	checkField(f: numField) {
+
+
 	}
 
        getSquareByField (f: numField) {

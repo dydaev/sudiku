@@ -84,7 +84,7 @@
 		z-index: 3;
 		position: fixed;
 		top: 20px;
-		left: 25px;
+		left: 10px;
 		height: 40px;
 		width: 40px;
 		border: none;

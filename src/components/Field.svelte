@@ -4,12 +4,16 @@
 		v: 0,
 		x: 0
 	}
+	export let onChangeField;
+	export let isError = false;
+	export let indF;
+	export let indS;
 
 	const handleChangeInput = (e: any) => {
-		
 		const key = e.key
 
 		if (key*1 >=1 && key*1 < 10) {
+			onChangeField(indS, indF, key*1)
 			value = {
 				...value,
 				v: key*1
@@ -31,13 +35,17 @@
 	 min="1"
   	 max="9"
   	 size="1"
-    	type="number"
-	disabled={value.x || false}
-  	 value={value.v || ""}
+    	 type="number"
+	 disabled={value.x || false}
+      	 value={value.v || ""}
+      	 class={isError ? "field-doubling" : ""}
   	>
 </div>
 
 <style>
+	:global(.field-doubling) {
+		color: darkred;
+	}
 	.su-field {
 		height: 100%;
 		width: 100%;
